@@ -31,9 +31,40 @@ function deleteProject(id) {
 }
 
 function renameProject (id, name) {
-  projects [projects.findIndex (item => item.id === id)].name = name;
+  projects.find(item => item.id === id).name = name;
 }
 
+function addTodo(title, description, dueDate, priority, projectId) {
+  const newTodo = new Todo (title, description, dueDate, priority)
+  projects.find(item => item.id === projectId).todos.push(newTodo);
+
+}
+
+function deleteTodo(id, projectId) {
+  const project = projects.find(item => item.id === projectId);
+  const todoIndex = project.todos.findIndex(item => item.id === id);
+  project.todos.splice (todoIndex, 1);
+}
+
+function toggleComplete(id, projectId) {
+  const project = projects.find(item => item.id === projectId);
+  const todo = project.todos.find(item => item.id === id);
+  todo.completed = !todo.completed;
+
+}
+
+function changePriority(id, projectId, priority) {
+  const project = projects.find(item => item.id === projectId);
+  const todo = project.todos.find(item => item.id === id);
+  todo.priority = priority;
+}
+
+function editTodo(id, projectId, updates) {
+  const project = projects.find(item => item.id === projectId);
+  const todo = project.todos.find(item => item.id === id);
+
+  Object.assign (todo, updates);
+}
 
 
 
