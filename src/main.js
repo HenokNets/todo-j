@@ -26,10 +26,10 @@ function saveToStorage() {
 
 function loadFromStorage() {
   const saved = JSON.parse(localStorage.getItem("projects"));
-  if (saved) {
+  if (saved && saved.length > 0) {
     projects = saved;
   } else {
-    projects = [new Project("Default")];
+    projects = [new Project("Inbox")];
     saveToStorage();
   }
 }
@@ -153,4 +153,8 @@ addProjectBtn.addEventListener("click", () => {
 });
 
 loadFromStorage();
+if (projects.length > 0) {
+  currentProjectId = projects[0].id;
+}
 renderProjects();
+renderTodos();
