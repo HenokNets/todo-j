@@ -17,6 +17,7 @@ class Todo {
   }
 }
 
+
 let projects = [];
 let currentProjectId = null;
 
@@ -89,6 +90,9 @@ function editTodo(id, projectId, updates) {
 
 const projectList = document.getElementById("projects-list");
 const addProjectBtn = document.getElementById("add-project");
+const addTodoBtn = document.getElementById("add-todo");
+const todoContainer = document.getElementById("todo-container");
+const projectTitle = document.getElementById("project-title");
 
 function renderProjects() {
   projectList.innerHTML = '';
@@ -146,10 +150,85 @@ function renderProjects() {
   });
 }
 
+function renderTodos() {
+  if (!todoContainer || !projectTitle) return;
+  
+  todoContainer.innerHTML = '';
+  
+  if (!currentProjectId) {
+    projectTitle.textContent = 'Select a Project';
+    todoContainer.innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">Select a project to view its todos</p>';
+    return;
+  }
+
+  const project = projects.find(p => p.id === currentProjectId);
+  if (!project) return;
+
+  projectTitle.textContent = project.name;
+
+  if (project.todos.length === 0) {
+    todoContainer.innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">No todos yet. Click "Add Todo" to create one!</p>';
+    return;
+  }
+
+  project.todos.forEach(todo => {
+    const todoDiv = document.createElement('div');
+    todoDiv.className = `todo-item ${todo.completed ? 'completed' : ''}`;
+    
+    todoDiv.innerHTML = `
+      <div class="todo-left">
+        <input type="checkbox" ${todo.completed ? 'checked' : ''} class="todo-checkbox">
+        <div class="todo-info">
+          <h4 class="${todo.completed ? 'strikethrough' : ''}">${escapeHtml(todo.title)}</h4>
+          ${todo.description ? `<p>${escapeHtml(todo.description)}</p>` : ''}
+          ${todo.dueDate ? `<small>Due: ${todo.dueDate}</small>` : ''}
+          <span class="priority-badge priority-${todo.priority}">${todo.priority}</span>
+        </div>
+      </div>
+      <div class="todo-actions">
+        <button class="edit-btn">Edit</button>
+        <button class="delete-btn">Delete</button>
+      </div>
+    `;
+
+    todoDiv.querySelector('.todo-checkbox').addEventListener('change', () => {
+      toggleComplete(todo.id, currentProjectId);
+      renderTodos();
+    });
+
+    todoDiv.querySelector('.delete-btn').addEventListener('click', () => {
+      if (confirm('Delete this todo?')) {
+        deleteTodo(todo.id, currentProjectId);
+        renderTodos();
+      }
+    });
+
+    todoDiv.querySelector('.edit-btn').addEventListener('click', () => {
+      console.log('Edit todo:', todo.id);
+    });
+
+    todoContainer.appendChild(todoDiv);
+  });
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
 addProjectBtn.addEventListener("click", () => {
   const userInput = prompt("Enter name for the project you want to create");
   if (userInput === null || userInput === "") return;
   createProject(userInput);
+});
+
+addTodoBtn.addEventListener('click', () => {
+  if (!currentProjectId) {
+    alert('Please select a project first!');
+    return;
+  }
+  console.log('Add todo clicked');
 });
 
 loadFromStorage();
