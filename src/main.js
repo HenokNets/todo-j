@@ -3,7 +3,6 @@ class Project {
     this.name = name;
     this.todos = [];
     this.id = Date.now().toString(36);
-    
   }
 }
 
@@ -19,9 +18,14 @@ class Todo {
 }
 
 let projects = [];
+let currentProjectId = null;
+
+function saveToStorage() {
+  localStorage.setItem("projects", JSON.stringify(projects));
+}
 
 function loadFromStorage() {
-  let saved = JSON.parse(localStorage.getItem("projects"));
+  const saved = JSON.parse(localStorage.getItem("projects"));
   if (saved) {
     projects = saved;
   } else {
@@ -31,64 +35,122 @@ function loadFromStorage() {
 }
 
 function createProject(name) {
-  const newProject = new Project (name);
-  projects.push (newProject);
-  saveToStorage()
+  const newProject = new Project(name);
+  projects.push(newProject);
+  saveToStorage();
+  renderProjects();
 }
 
 function deleteProject(id) {
-  projects.splice (projects.findIndex(item => item.id === id), 1);
-  saveToStorage()
+  projects.splice(projects.findIndex(item => item.id === id), 1);
+  saveToStorage();
+  renderProjects();
 }
 
-function renameProject (id, name) {
+function renameProject(id, name) {
   projects.find(item => item.id === id).name = name;
-  saveToStorage()
+  saveToStorage();
+  renderProjects();
 }
 
 function addTodo(title, description, dueDate, priority, projectId) {
-  const newTodo = new Todo (title, description, dueDate, priority)
+  const newTodo = new Todo(title, description, dueDate, priority);
   projects.find(item => item.id === projectId).todos.push(newTodo);
-  saveToStorage()
+  saveToStorage();
 }
 
 function deleteTodo(id, projectId) {
   const project = projects.find(item => item.id === projectId);
   const todoIndex = project.todos.findIndex(item => item.id === id);
-  project.todos.splice (todoIndex, 1);
-  saveToStorage()
+  project.todos.splice(todoIndex, 1);
+  saveToStorage();
 }
 
 function toggleComplete(id, projectId) {
   const project = projects.find(item => item.id === projectId);
   const todo = project.todos.find(item => item.id === id);
   todo.completed = !todo.completed;
-  saveToStorage()
+  saveToStorage();
 }
 
 function changePriority(id, projectId, priority) {
   const project = projects.find(item => item.id === projectId);
   const todo = project.todos.find(item => item.id === id);
   todo.priority = priority;
-  saveToStorage()
+  saveToStorage();
 }
 
 function editTodo(id, projectId, updates) {
   const project = projects.find(item => item.id === projectId);
   const todo = project.todos.find(item => item.id === id);
-
-  Object.assign (todo, updates);
-  saveToStorage()
+  Object.assign(todo, updates);
+  saveToStorage();
 }
 
-function saveToStorage() {
-  localStorage.setItem ("projects", JSON.stringify(projects));
+const projectList = document.getElementById("projects-list");
+const addProjectBtn = document.getElementById("add-project");
+
+function renderProjects() {
+  projectList.innerHTML = '';
+
+  projects.forEach(project => {
+    const li = document.createElement('li');
+    li.className = `project-item ${project.id === currentProjectId ? 'active' : ''}`;
+    
+    const span = document.createElement('span');
+    span.textContent = project.name;
+    span.className = 'project-name';
+
+    const actionsDiv = document.createElement('div');
+    actionsDiv.className = 'project-actions';
+
+    const renameBtn = document.createElement('button');
+    renameBtn.textContent = '✎';
+    renameBtn.className = 'rename-btn';
+    renameBtn.title = 'Rename project';
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.textContent = '×';
+    deleteBtn.className = 'delete-btn';
+    deleteBtn.title = 'Delete project';
+
+    actionsDiv.append(renameBtn, deleteBtn);
+    li.append(span, actionsDiv);
+    projectList.appendChild(li);
+
+    span.addEventListener('click', () => {
+      currentProjectId = project.id;
+      renderProjects();
+      renderTodos(); 
+    });
+
+    renameBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const newName = prompt('Enter new project name:', project.name);
+      if (newName && newName.trim()) {
+        renameProject(project.id, newName.trim());
+      }
+    });
+
+    deleteBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (confirm(`Delete project "${project.name}" and all its todos?`)) {
+        deleteProject(project.id);
+        if (currentProjectId === project.id) {
+          currentProjectId = projects.length > 0 ? projects[0].id : null;
+        }
+        renderProjects();
+        renderTodos();
+      }
+    });
+  });
 }
 
-createProject("Work")
-addTodo("Buy milk", "2%", "2026-08-07", "high", projects[0].id)
-console.log(projects)
+addProjectBtn.addEventListener("click", () => {
+  const userInput = prompt("Enter name for the project you want to create");
+  if (userInput === null || userInput === "") return;
+  createProject(userInput);
+});
 
 loadFromStorage();
-
-
+renderProjects();

@@ -7,11 +7,17 @@
     <title>todo-j</title>
   </head>
   <body>
-    <input type="text" id="input-field" placeholder="Enter your todo here...">
-    <button class="add-task-btn">Add Task</button>
-    <ul class="todo-list">
+    <aside>
+      <h3>MY TODO</h3>
+      <div id="projects-list"></div>
+      <button id="add-project">Add Project</button>
+    </aside>
 
-    </ul>
+    <main>
+      <h3 id="project-title"></h3>
+      <div id="todo-container"></div>
+      <button id="add-todo"></button>
+    </main>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
