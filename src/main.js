@@ -110,6 +110,11 @@ const submitBtn = todoForm.querySelector(".btn-submit");
 // Track if we're editing or adding
 let editingTodoId = null;
 
+function refreshUI() {
+  renderProjects();
+  renderTodos();
+}
+
 function renderProjects() {
   projectList.innerHTML = '';
 
@@ -140,8 +145,7 @@ function renderProjects() {
 
     span.addEventListener('click', () => {
       currentProjectId = project.id;
-      renderProjects();
-      renderTodos(); 
+      refreshUI();
     });
 
     renameBtn.addEventListener('click', (e) => {
@@ -159,8 +163,7 @@ function renderProjects() {
         if (currentProjectId === project.id) {
           currentProjectId = projects.length > 0 ? projects[0].id : null;
         }
-        renderProjects();
-        renderTodos();
+        refreshUI();
       }
     });
   });
@@ -172,7 +175,7 @@ function renderTodos() {
   todoContainer.innerHTML = '';
   
   if (!currentProjectId) {
-    projectTitle.textContent = 'Select a Project';
+    projectTitle.innerHTML = 'Select a Project';
     todoContainer.innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">Select a project to view its todos</p>';
     return;
   }
@@ -180,7 +183,10 @@ function renderTodos() {
   const project = projects.find(p => p.id === currentProjectId);
   if (!project) return;
 
-  projectTitle.textContent = project.name;
+  const completedCount = project.todos.filter(t => t.completed).length;
+  const totalCount = project.todos.length;
+  
+  projectTitle.innerHTML = `${project.name} <span class="todo-count">${completedCount}/${totalCount} completed</span>`;
 
   if (project.todos.length === 0) {
     todoContainer.innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">No todos yet. Click "Add Todo" to create one!</p>';
@@ -195,7 +201,7 @@ function renderTodos() {
       <div class="todo-left">
         <input type="checkbox" ${todo.completed ? 'checked' : ''} class="todo-checkbox">
         <div class="todo-info">
-          <h4 class="${todo.completed ? 'strikethrough' : ''}">${escapeHtml(todo.title)}</h4>
+          <h4>${escapeHtml(todo.title)}</h4>
           ${todo.description ? `<p>${escapeHtml(todo.description)}</p>` : ''}
           ${todo.dueDate ? `<small>Due: ${todo.dueDate}</small>` : ''}
           <span class="priority-badge priority-${todo.priority}">${todo.priority}</span>
@@ -209,13 +215,13 @@ function renderTodos() {
 
     todoDiv.querySelector('.todo-checkbox').addEventListener('change', () => {
       toggleComplete(todo.id, currentProjectId);
-      renderTodos();
+      refreshUI();
     });
 
     todoDiv.querySelector('.delete-btn').addEventListener('click', () => {
       if (confirm('Delete this todo?')) {
         deleteTodo(todo.id, currentProjectId);
-        renderTodos();
+        refreshUI();
       }
     });
 
@@ -338,7 +344,6 @@ todoForm.addEventListener('submit', (e) => {
   const priority = prioritySelect.value;
 
   if (editingTodoId) {
-    // Edit existing todo
     editTodo(editingTodoId, currentProjectId, {
       title,
       description,
@@ -346,10 +351,11 @@ todoForm.addEventListener('submit', (e) => {
       priority
     });
   } else {
+    // Add new todo
     addTodo(title, description, dueDate, priority, currentProjectId);
   }
 
-  renderTodos();
+  refreshUI();
   closeModal();
 });
 
@@ -365,5 +371,4 @@ loadFromStorage();
 if (projects.length > 0) {
   currentProjectId = projects[0].id;
 }
-renderProjects();
-renderTodos();
+refreshUI();

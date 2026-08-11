@@ -111,6 +111,15 @@ main {
 #project-title {
   font-size: 2em;
   margin-bottom: 25px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+#project-title .todo-count {
+  font-size: 0.5em;
+  color: #7f8c8d;
+  font-weight: normal;
 }
 
 #todo-container {
@@ -129,7 +138,7 @@ main {
   justify-content: space-between;
   align-items: center;
   border-left: 4px solid #bdc3c7;
-  transition: all 0.2s;
+  transition: all 0.3s;
 }
 
 .todo-item:hover {
@@ -142,7 +151,27 @@ main {
 .todo-item.priority-high { border-left-color: #e74c3c; }
 
 .todo-item.completed {
-  opacity: 0.7;
+  opacity: 0.6;
+  background: #f8f9fa;
+}
+
+.todo-item.completed .todo-info h4 {
+  text-decoration: line-through;
+  color: #95a5a6;
+}
+
+.todo-item.completed .todo-info p {
+  text-decoration: line-through;
+  color: #bdc3c7;
+}
+
+.todo-item.completed .todo-info small {
+  text-decoration: line-through;
+  color: #bdc3c7;
+}
+
+.todo-item.completed .priority-badge {
+  opacity: 0.5;
 }
 
 .todo-left {
@@ -156,21 +185,27 @@ main {
   width: 18px;
   height: 18px;
   cursor: pointer;
+  accent-color: #2ecc71;
 }
 
 .todo-info h4 {
   margin-bottom: 5px;
+  transition: all 0.3s;
 }
 
 .todo-info p {
   color: #7f8c8d;
   font-size: 0.9em;
   margin-bottom: 5px;
+  transition: all 0.3s;
 }
 
-.strikethrough {
-  text-decoration: line-through;
+.todo-info small {
   color: #95a5a6;
+  font-size: 0.85em;
+  display: block;
+  margin-bottom: 5px;
+  transition: all 0.3s;
 }
 
 .priority-badge {
@@ -181,6 +216,7 @@ main {
   font-weight: 600;
   text-transform: uppercase;
   margin-top: 5px;
+  transition: all 0.3s;
 }
 
 .priority-low { background: #d4edda; color: #155724; }
@@ -390,6 +426,7 @@ main {
   }
 }
 
+/* Responsive Design, learning about it more*/ 
 @media (max-width: 768px) {
   body {
     flex-direction: column;
