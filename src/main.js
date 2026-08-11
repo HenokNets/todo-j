@@ -107,6 +107,9 @@ const prioritySelect = document.getElementById("todo-priority");
 const titleError = document.getElementById("title-error");
 const submitBtn = todoForm.querySelector(".btn-submit");
 
+// Track if we're editing or adding
+let editingTodoId = null;
+
 function renderProjects() {
   projectList.innerHTML = '';
 
@@ -217,7 +220,7 @@ function renderTodos() {
     });
 
     todoDiv.querySelector('.edit-btn').addEventListener('click', () => {
-      console.log('Edit todo:', todo.id);
+      openEditForm(todo);
     });
 
     todoContainer.appendChild(todoDiv);
@@ -232,6 +235,29 @@ function escapeHtml(text) {
 
 // Modal Functions
 function openModal() {
+  editingTodoId = null;
+  modalTitle.textContent = 'Add New Todo';
+  submitBtn.textContent = 'Add Todo';
+  resetForm();
+  todoModal.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function openEditForm(todo) {
+  editingTodoId = todo.id;
+  modalTitle.textContent = 'Edit Todo';
+  submitBtn.textContent = 'Save Changes';
+  
+  // Pre-fill form values
+  titleInput.value = todo.title;
+  descriptionInput.value = todo.description || '';
+  dueDateInput.value = todo.dueDate || '';
+  prioritySelect.value = todo.priority;
+  
+  // Clear any errors
+  titleError.classList.remove('show');
+  titleInput.classList.remove('error');
+  
   todoModal.classList.add('show');
   document.body.style.overflow = 'hidden';
 }
@@ -247,14 +273,21 @@ function resetForm() {
   titleError.classList.remove('show');
   titleInput.classList.remove('error');
   prioritySelect.value = 'medium';
+  editingTodoId = null;
 }
 
 function validateForm() {
   let isValid = true;
+  const trimmedTitle = titleInput.value.trim();
   
   // Title validation
-  if (!titleInput.value.trim()) {
+  if (!trimmedTitle) {
     titleError.textContent = 'Title is required';
+    titleError.classList.add('show');
+    titleInput.classList.add('error');
+    isValid = false;
+  } else if (trimmedTitle.length < 3) {
+    titleError.textContent = 'Title must be at least 3 characters';
     titleError.classList.add('show');
     titleInput.classList.add('error');
     isValid = false;
@@ -304,7 +337,18 @@ todoForm.addEventListener('submit', (e) => {
   const dueDate = dueDateInput.value;
   const priority = prioritySelect.value;
 
-  addTodo(title, description, dueDate, priority, currentProjectId);
+  if (editingTodoId) {
+    // Edit existing todo
+    editTodo(editingTodoId, currentProjectId, {
+      title,
+      description,
+      dueDate,
+      priority
+    });
+  } else {
+    addTodo(title, description, dueDate, priority, currentProjectId);
+  }
+
   renderTodos();
   closeModal();
 });
