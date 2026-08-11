@@ -17,7 +17,6 @@ class Todo {
   }
 }
 
-
 let projects = [];
 let currentProjectId = null;
 
@@ -88,11 +87,25 @@ function editTodo(id, projectId, updates) {
   saveToStorage();
 }
 
+// DOM Elements
 const projectList = document.getElementById("projects-list");
 const addProjectBtn = document.getElementById("add-project");
 const addTodoBtn = document.getElementById("add-todo");
 const todoContainer = document.getElementById("todo-container");
 const projectTitle = document.getElementById("project-title");
+const todoModal = document.getElementById("todo-modal");
+const todoForm = document.getElementById("todo-form");
+const modalTitle = document.getElementById("modal-title");
+const closeModalBtn = document.querySelector(".close-modal");
+const cancelBtn = document.getElementById("cancel-todo");
+
+// Form Inputs
+const titleInput = document.getElementById("todo-title");
+const descriptionInput = document.getElementById("todo-description");
+const dueDateInput = document.getElementById("todo-due-date");
+const prioritySelect = document.getElementById("todo-priority");
+const titleError = document.getElementById("title-error");
+const submitBtn = todoForm.querySelector(".btn-submit");
 
 function renderProjects() {
   projectList.innerHTML = '';
@@ -173,7 +186,7 @@ function renderTodos() {
 
   project.todos.forEach(todo => {
     const todoDiv = document.createElement('div');
-    todoDiv.className = `todo-item ${todo.completed ? 'completed' : ''}`;
+    todoDiv.className = `todo-item priority-${todo.priority} ${todo.completed ? 'completed' : ''}`;
     
     todoDiv.innerHTML = `
       <div class="todo-left">
@@ -217,6 +230,43 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
+// Modal Functions
+function openModal() {
+  todoModal.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  todoModal.classList.remove('show');
+  document.body.style.overflow = '';
+  resetForm();
+}
+
+function resetForm() {
+  todoForm.reset();
+  titleError.classList.remove('show');
+  titleInput.classList.remove('error');
+  prioritySelect.value = 'medium';
+}
+
+function validateForm() {
+  let isValid = true;
+  
+  // Title validation
+  if (!titleInput.value.trim()) {
+    titleError.textContent = 'Title is required';
+    titleError.classList.add('show');
+    titleInput.classList.add('error');
+    isValid = false;
+  } else {
+    titleError.classList.remove('show');
+    titleInput.classList.remove('error');
+  }
+
+  return isValid;
+}
+
+// Event Listeners
 addProjectBtn.addEventListener("click", () => {
   const userInput = prompt("Enter name for the project you want to create");
   if (userInput === null || userInput === "") return;
@@ -228,9 +278,45 @@ addTodoBtn.addEventListener('click', () => {
     alert('Please select a project first!');
     return;
   }
-  console.log('Add todo clicked');
+  openModal();
 });
 
+closeModalBtn.addEventListener('click', closeModal);
+cancelBtn.addEventListener('click', closeModal);
+
+// Close modal when clicking outside
+todoModal.addEventListener('click', (e) => {
+  if (e.target === todoModal) {
+    closeModal();
+  }
+});
+
+// Form submission
+todoForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  
+  if (!validateForm()) {
+    return;
+  }
+
+  const title = titleInput.value.trim();
+  const description = descriptionInput.value.trim();
+  const dueDate = dueDateInput.value;
+  const priority = prioritySelect.value;
+
+  addTodo(title, description, dueDate, priority, currentProjectId);
+  renderTodos();
+  closeModal();
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && todoModal.classList.contains('show')) {
+    closeModal();
+  }
+});
+
+// Initialize app
 loadFromStorage();
 if (projects.length > 0) {
   currentProjectId = projects[0].id;
