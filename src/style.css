@@ -12,20 +12,25 @@ body {
   color: #2c3e50;
 }
 
+/* Sidebar Styles */
 aside {
-  width: 280px;
-  background: #2c3e50;
+  width: 300px;
+  background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
   color: #ecf0f1;
-  padding: 20px;
+  padding: 25px 20px;
   display: flex;
   flex-direction: column;
   gap: 20px;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+  position: relative;
+  z-index: 10;
 }
 
-aside h3 {
+.sidebar-header h3 {
   font-size: 1.5em;
   padding-bottom: 15px;
   border-bottom: 2px solid rgba(255,255,255,0.1);
+  letter-spacing: 1px;
 }
 
 #projects-list {
@@ -34,28 +39,48 @@ aside h3 {
   flex-direction: column;
   gap: 5px;
   flex: 1;
+  overflow-y: auto;
+  max-height: calc(100vh - 200px);
+}
+
+#projects-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+#projects-list::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.2);
+  border-radius: 4px;
+}
+
+#projects-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.3);
 }
 
 .project-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px;
+  padding: 12px 15px;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s;
+  border-left: 3px solid transparent;
 }
 
 .project-item:hover {
   background: rgba(255,255,255,0.1);
+  transform: translateX(3px);
 }
 
 .project-item.active {
   background: #4a90d9;
+  border-left-color: #2ecc71;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 
 .project-name {
   flex: 1;
+  font-weight: 500;
 }
 
 .project-actions {
@@ -77,6 +102,7 @@ aside h3 {
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 1.1em;
+  transition: all 0.2s;
 }
 
 .rename-btn:hover {
@@ -91,59 +117,94 @@ aside h3 {
   background: #4a90d9;
   color: white;
   border: none;
-  padding: 12px;
+  padding: 14px;
   border-radius: 8px;
   cursor: pointer;
   font-size: 1em;
   font-weight: 600;
-  transition: background 0.2s;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 #add-project:hover {
   background: #357abd;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
 }
 
+#add-project:active {
+  transform: translateY(0);
+}
+
+/* Main Content Styles */
 main {
   flex: 1;
-  padding: 30px;
+  padding: 30px 40px;
+  overflow-y: auto;
+  max-height: 100vh;
+}
+
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  gap: 20px;
+  flex-wrap: wrap;
 }
 
 #project-title {
   font-size: 2em;
-  margin-bottom: 25px;
   display: flex;
   align-items: center;
   gap: 15px;
+  flex-wrap: wrap;
 }
 
 #project-title .todo-count {
   font-size: 0.5em;
   color: #7f8c8d;
   font-weight: normal;
+  background: #ecf0f1;
+  padding: 5px 12px;
+  border-radius: 20px;
 }
 
 #todo-container {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   margin-bottom: 20px;
 }
 
+/* Todo Items */
 .todo-item {
   background: white;
-  padding: 15px 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  padding: 18px 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-left: 4px solid #bdc3c7;
+  border-left: 5px solid #bdc3c7;
   transition: all 0.3s;
+  animation: slideInItem 0.3s;
+}
+
+@keyframes slideInItem {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .todo-item:hover {
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+  transform: translateY(-2px);
 }
 
 .todo-item.priority-low { border-left-color: #2ecc71; }
@@ -151,8 +212,9 @@ main {
 .todo-item.priority-high { border-left-color: #e74c3c; }
 
 .todo-item.completed {
-  opacity: 0.6;
+  opacity: 0.7;
   background: #f8f9fa;
+  border-left-color: #95a5a6;
 }
 
 .todo-item.completed .todo-info h4 {
@@ -178,19 +240,26 @@ main {
   display: flex;
   gap: 15px;
   align-items: flex-start;
+  flex: 1;
 }
 
 .todo-checkbox {
   margin-top: 3px;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   cursor: pointer;
   accent-color: #2ecc71;
 }
 
+.todo-info {
+  flex: 1;
+}
+
 .todo-info h4 {
   margin-bottom: 5px;
+  font-size: 1.1em;
   transition: all 0.3s;
+  word-break: break-word;
 }
 
 .todo-info p {
@@ -198,24 +267,25 @@ main {
   font-size: 0.9em;
   margin-bottom: 5px;
   transition: all 0.3s;
+  word-break: break-word;
 }
 
 .todo-info small {
   color: #95a5a6;
   font-size: 0.85em;
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
   transition: all 0.3s;
 }
 
 .priority-badge {
   display: inline-block;
-  padding: 2px 8px;
+  padding: 4px 10px;
   border-radius: 12px;
   font-size: 0.75em;
   font-weight: 600;
   text-transform: uppercase;
-  margin-top: 5px;
+  letter-spacing: 0.5px;
   transition: all 0.3s;
 }
 
@@ -229,42 +299,59 @@ main {
 }
 
 .edit-btn, .delete-btn {
-  padding: 6px 12px;
-  border: 1px solid #bdc3c7;
-  border-radius: 4px;
+  padding: 8px 16px;
+  border: 1px solid #dcdde1;
+  border-radius: 6px;
   background: white;
   cursor: pointer;
   transition: all 0.2s;
+  font-size: 0.9em;
+}
+
+.edit-btn {
+  color: #4a90d9;
+  border-color: #4a90d9;
 }
 
 .edit-btn:hover {
   background: #4a90d9;
   color: white;
-  border-color: #4a90d9;
+}
+
+.delete-btn {
+  color: #e74c3c;
+  border-color: #e74c3c;
 }
 
 .delete-btn:hover {
   background: #e74c3c;
   color: white;
-  border-color: #e74c3c;
 }
 
 #add-todo {
   background: #2ecc71;
   color: white;
   border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
+  padding: 14px 28px;
+  border-radius: 10px;
   font-size: 1em;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(46, 204, 113, 0.3);
 }
 
 #add-todo:hover {
   background: #27ae60;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(46, 204, 113, 0.4);
 }
 
+#add-todo:active {
+  transform: translateY(0);
+}
+
+/* Modal Styles */
 .modal {
   display: none;
   position: fixed;
@@ -275,6 +362,7 @@ main {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   animation: fadeIn 0.3s;
+  backdrop-filter: blur(5px);
 }
 
 .modal.show {
@@ -285,10 +373,10 @@ main {
 
 .modal-content {
   background: white;
-  border-radius: 12px;
+  border-radius: 15px;
   width: 90%;
   max-width: 500px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   animation: slideIn 0.3s;
 }
 
@@ -313,13 +401,22 @@ main {
   cursor: pointer;
   padding: 0;
   line-height: 1;
-  transition: color 0.2s;
+  transition: all 0.2s;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
 }
 
 .close-modal:hover {
   color: #e74c3c;
+  background: #f8d7da;
+  transform: rotate(90deg);
 }
 
+/* Form Styles */
 #todo-form {
   padding: 25px;
   display: flex;
@@ -342,12 +439,13 @@ main {
 .form-group input,
 .form-group textarea,
 .form-group select {
-  padding: 10px 12px;
+  padding: 12px;
   border: 1px solid #dcdde1;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 0.95em;
   font-family: inherit;
-  transition: border-color 0.2s;
+  transition: all 0.2s;
+  background: #fafafa;
 }
 
 .form-group input:focus,
@@ -356,12 +454,14 @@ main {
   outline: none;
   border-color: #4a90d9;
   box-shadow: 0 0 0 3px rgba(74, 144, 217, 0.1);
+  background: white;
 }
 
 .form-group input.error,
 .form-group textarea.error,
 .form-group select.error {
   border-color: #e74c3c;
+  background: #fff5f5;
 }
 
 .error-message {
@@ -372,6 +472,13 @@ main {
 
 .error-message.show {
   display: block;
+  animation: shake 0.3s;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
 }
 
 .form-actions {
@@ -383,8 +490,8 @@ main {
 
 .btn-cancel,
 .btn-submit {
-  padding: 10px 24px;
-  border-radius: 6px;
+  padding: 12px 24px;
+  border-radius: 8px;
   font-size: 0.95em;
   font-weight: 600;
   cursor: pointer;
@@ -404,12 +511,15 @@ main {
 .btn-submit {
   background: #2ecc71;
   color: white;
+  box-shadow: 0 2px 8px rgba(46, 204, 113, 0.3);
 }
 
 .btn-submit:hover {
   background: #27ae60;
+  box-shadow: 0 4px 12px rgba(46, 204, 113, 0.4);
 }
 
+/* Animations */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -426,7 +536,23 @@ main {
   }
 }
 
-/* Responsive Design, learning about it more*/ 
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #95a5a6;
+}
+
+.empty-state .icon {
+  font-size: 4em;
+  margin-bottom: 20px;
+}
+
+.empty-state p {
+  font-size: 1.1em;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
   body {
     flex-direction: column;
@@ -434,14 +560,39 @@ main {
 
   aside {
     width: 100%;
+    max-height: 300px;
+  }
+
+  #projects-list {
+    max-height: 150px;
   }
 
   main {
     padding: 20px;
+    max-height: none;
+  }
+
+  .main-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  #project-title {
+    font-size: 1.5em;
   }
 
   .modal-content {
     width: 95%;
     margin: 20px;
+  }
+
+  .todo-item {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .todo-actions {
+    width: 100%;
+    justify-content: flex-end;
   }
 }

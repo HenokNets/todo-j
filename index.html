@@ -4,22 +4,27 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>todo-j</title>
+    <title>Todo-J | Project Manager</title>
     <link rel="stylesheet" href="src/style.css">
   </head>
   <body>
     <aside>
-      <h3>MY TODO</h3>
+      <div class="sidebar-header">
+        <h3>📝 MY TODO</h3>
+      </div>
       <div id="projects-list"></div>
-      <button id="add-project">Add Project</button>
+      <button id="add-project">+ Add Project</button>
     </aside>
 
     <main>
-      <h3 id="project-title"></h3>
+      <div class="main-header">
+        <h3 id="project-title"></h3>
+        <button id="add-todo">+ Add Todo</button>
+      </div>
       <div id="todo-container"></div>
-      <button id="add-todo">Add Todo</button>
     </main>
 
+    <!-- Todo Form Modal -->
     <div id="todo-modal" class="modal">
       <div class="modal-content">
         <div class="modal-header">
@@ -57,9 +62,9 @@
           <div class="form-group">
             <label for="todo-priority">Priority</label>
             <select id="todo-priority">
-              <option value="low">Low</option>
-              <option value="medium" selected>Medium</option>
-              <option value="high">High</option>
+              <option value="low">🟢 Low</option>
+              <option value="medium" selected>🟡 Medium</option>
+              <option value="high">🔴 High</option>
             </select>
           </div>
 

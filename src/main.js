@@ -176,7 +176,12 @@ function renderTodos() {
   
   if (!currentProjectId) {
     projectTitle.innerHTML = 'Select a Project';
-    todoContainer.innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">Select a project to view its todos</p>';
+    todoContainer.innerHTML = `
+      <div class="empty-state">
+        <div class="icon">📂</div>
+        <p>Select a project to view its todos</p>
+      </div>
+    `;
     return;
   }
 
@@ -189,7 +194,12 @@ function renderTodos() {
   projectTitle.innerHTML = `${project.name} <span class="todo-count">${completedCount}/${totalCount} completed</span>`;
 
   if (project.todos.length === 0) {
-    todoContainer.innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">No todos yet. Click "Add Todo" to create one!</p>';
+    todoContainer.innerHTML = `
+      <div class="empty-state">
+        <div class="icon">✅</div>
+        <p>No todos yet. Click "Add Todo" to create one!</p>
+      </div>
+    `;
     return;
   }
 
@@ -197,13 +207,15 @@ function renderTodos() {
     const todoDiv = document.createElement('div');
     todoDiv.className = `todo-item priority-${todo.priority} ${todo.completed ? 'completed' : ''}`;
     
+    const dueDateFormatted = todo.dueDate ? formatDate(todo.dueDate) : '';
+    
     todoDiv.innerHTML = `
       <div class="todo-left">
         <input type="checkbox" ${todo.completed ? 'checked' : ''} class="todo-checkbox">
         <div class="todo-info">
           <h4>${escapeHtml(todo.title)}</h4>
           ${todo.description ? `<p>${escapeHtml(todo.description)}</p>` : ''}
-          ${todo.dueDate ? `<small>Due: ${todo.dueDate}</small>` : ''}
+          ${dueDateFormatted ? `<small>📅 Due: ${dueDateFormatted}</small>` : ''}
           <span class="priority-badge priority-${todo.priority}">${todo.priority}</span>
         </div>
       </div>
@@ -237,6 +249,12 @@ function escapeHtml(text) {
   const div = document.createElement('div');
   div.textContent = text;
   return div.innerHTML;
+}
+
+function formatDate(dateString) {
+  const options = { year: 'numeric', month: 'short', day: 'numeric' };
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', options);
 }
 
 // Modal Functions
@@ -344,6 +362,7 @@ todoForm.addEventListener('submit', (e) => {
   const priority = prioritySelect.value;
 
   if (editingTodoId) {
+    // Edit existing todo
     editTodo(editingTodoId, currentProjectId, {
       title,
       description,
@@ -372,3 +391,7 @@ if (projects.length > 0) {
   currentProjectId = projects[0].id;
 }
 refreshUI();
+
+// Log success message
+console.log('✅ Todo app loaded successfully!');
+console.log(`📦 ${projects.length} project(s) loaded`);
